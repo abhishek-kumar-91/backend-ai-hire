@@ -163,3 +163,34 @@ export const refreshToken = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+export const logout = async (req, res) => {
+    const { refreshToken } = req.body; // Optional: refreshToken from request body
+    const userId = req.user.id; // From authMiddleware (decoded from accessToken)
+  
+    try {
+      // Find the user by ID
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // If refreshToken is provided, verify it matches and clear it
+      if (refreshToken) {
+        if (user.refreshToken !== refreshToken) {
+          return res.status(403).json({ message: "Invalid refresh token" });
+        }
+        user.refreshToken = null; // Clear the refresh token
+        await user.save();
+      } else if (user.refreshToken) {
+        // If no refreshToken provided but one exists, clear it anyway
+        user.refreshToken = null;
+        await user.save();
+      }
+  
+      res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+      console.error("Error during logout:", error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  };

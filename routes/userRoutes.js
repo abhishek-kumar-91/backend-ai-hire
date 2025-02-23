@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, signin, googleAuth, linkedinAuth, refreshToken } from '../controllers/userController.js';
+import { signup, signin, googleAuth, linkedinAuth, refreshToken, logout } from '../controllers/userController.js';
 import { validateSignup, validateSignin } from '../middleware/validateUser.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
@@ -23,5 +23,5 @@ router.get('/profile', authMiddleware, (req, res) => {
 
 // Refresh Token Route
 router.post('/refresh-token', refreshToken);
-
+router.post('/logout', authMiddleware, logout);
 export default router;

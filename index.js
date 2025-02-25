@@ -6,6 +6,9 @@ import session from 'express-session';
 
 import connectDB from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
+import hrEmailRoutes from "./routes/hrEmailRoutes.js"
+import jobRoutes from "./routes/jobRoutes.js";
+import hrRoutes from "./routes/hrEmailRoutes.js"
 import errorMiddleware from './middleware/errorMiddleware.js';
 
 // Load environment variables
@@ -31,6 +34,9 @@ app.use(session({
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/users', hrRoutes);
+app.use('/api/users', jobRoutes)
+
 
 // Global Error Handler Middleware
 app.use(errorMiddleware);

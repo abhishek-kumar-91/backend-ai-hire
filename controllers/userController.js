@@ -194,3 +194,76 @@ export const logout = async (req, res) => {
       res.status(500).json({ message: "Server error", error });
     }
   };
+
+
+export const updateUserSettings = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming you have auth middleware setting req.user
+        const { fullname, email, password, linkedinId } = req.body;
+
+        // Find the user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update only the fields that are provided
+        const updateFields = {};
+        
+        if (fullname) updateFields.fullname = fullname;
+        if (email) updateFields.email = email;
+        if (linkedinId) updateFields.linkedinId = linkedinId;
+        
+        // Handle password separately
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updateFields.password = await bcrypt.hash(password, salt);
+        }
+
+        // Update user with only provided fields
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        ).select('-password -refreshToken'); // Don't return sensitive fields
+
+        res.status(200).json({
+            message: 'Settings updated successfully',
+            user: updatedUser
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'Error updating settings', 
+            error: error.message 
+        });
+    }
+}
+
+// ... existing imports
+export const getUserProfile = async (req, res) => {
+    try {
+        const userId = req.user.id; // From auth middleware
+        const user = await User.findById(userId).select('-password -refreshToken');
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({
+            message: 'User profile fetched successfully',
+            user: {
+                fullname: user.fullname,
+                email: user.email,
+                phone: user.phone || '', // Add phone to schema if needed
+                linkedinId: user.linkedinId || ''
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'Error fetching user profile', 
+            error: error.message 
+        });
+    }
+};
+
+// Existing updateUserSettings function remains unchanged

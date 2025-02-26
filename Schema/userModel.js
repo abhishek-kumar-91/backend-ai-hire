@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
         unique: true,
         sparse: true
     },
+    phone: {  // Added phone field
+        type: String,
+        trim: true
+    },
     refreshToken: String,
 }, {
     timestamps: true

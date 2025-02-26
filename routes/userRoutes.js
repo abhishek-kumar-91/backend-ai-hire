@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, signin, googleAuth, linkedinAuth, refreshToken, logout } from '../controllers/userController.js';
+import { signup, signin, googleAuth, linkedinAuth, refreshToken, logout, updateUserSettings, getUserProfile } from '../controllers/userController.js';
 import { validateSignup, validateSignin } from '../middleware/validateUser.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
@@ -8,6 +8,8 @@ const router = express.Router();
 // Email & Password Authentication
 router.post('/signup', validateSignup, signup);
 router.post('/signin', validateSignin, signin);
+router.put('/settings',authMiddleware, updateUserSettings);
+router.get('/me', authMiddleware, getUserProfile);
 
 // Google Authentication
 router.post('/google-auth', googleAuth);

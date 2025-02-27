@@ -24,7 +24,13 @@ connectDB();
 
 // Middleware
 app.use(express.json()); // Parse JSON requests
-app.use(cors()); // Enable CORS
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'https://ai-hire.vercel.app', // Whitelist your frontend URL
+  credentials: true, // Allow cookies/headers (needed for auth tokens)
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], // Allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+};
+app.use(cors(corsOptions));
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
